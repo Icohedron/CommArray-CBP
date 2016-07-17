@@ -1,0 +1,114 @@
+//// Player ID (PID) System ////
+FUNC enablePID
+	scoreboard objectives add BiolabPID dummy Player ID
+	activate(PIDUpdate)
+END
+
+:PIDUpdate CLOCK 16 0 1
+scoreboard players add @a BiolabPID 0
+@a[BiolabPID=0,c=1] scoreboard players add HighestValueIdentifier BiolabPID 1
+scoreboard players operation @a[BiolabPID=0,c=1] BiolabPID = HighestValueIdentifier BiolabPID
+scoreboard players tag @a[BiolabPlayer] remove BiolabPlayer
+scoreboard players tag @a[x=458,y=4,z=183,dx=50,dy=97,dz=-121] add BiolabPlayer
+
+FUNC disablePID
+	deactivate(PIDUpdate)
+	scoreboard objectives remove BiolabPID
+	scoreboard players tags * remove BiolabPlayer
+END
+
+//// Teams ////
+FUNC setTeams
+	LOOP (Blue;Red)
+		scoreboard teams add Biolab|0|
+		scoreboard teams option Biolab|0| nametagVisibility hideForOtherTeams
+	END
+	
+	LOOP (Blue;Red;Neutral)
+		scoreboard teams add BiolabCP|0|
+		scoreboard teams option BiolabCP|0| nametagVisibility always
+	END
+	
+	scoreboard teams option BiolabBlue color blue
+	scoreboard teams option BiolabRed color red
+	
+	scoreboard teams option BiolabBlue friendlyfire false
+	scoreboard teams option BiolabRed friendlyfire false
+	
+	scoreboard teams option BiolabCPBlue color blue
+	scoreboard teams option BiolabCPRed color red
+	scoreboard teams option BiolabCPNeutral color white
+END
+
+FUNC removeTeams
+	scoreboard teams remove BiolabBlue
+	scoreboard teams remove BiolabRed
+END
+
+//// Team Functions ////
+:distributePlayers CLOCK 16 0 1
+scoreboard players set NumUPlayers BiolabTemp 0
+scoreboard teams join BiolabRed @r[x=474,y=51,z=99,dx=17,dy=8,dz=17,m=2]
+scoreboard teams join BiolabBlue @r[x=474,y=51,z=99,dx=17,dy=8,dz=17,m=2]
+@a[x=474,y=51,z=99,dx=17,dy=8,dz=17,m=2] scoreboard players add NumUPlayers BiolabTemp 1
+scoreboard players test NumUPlayers BiolabTemp 0 0
+CONDITION
+	deactivate(distributePlayers)
+
+//// Spawn Clock ////
+:spawnClock CLOCK  16 0 1
+// Neutral Area //
+gamemode 2 @a[BiolabPlayer,m=0]
+
+scoreboard players tag @a[x=474,y=51,z=99,dx=17,dy=8,dz=17,m=2] add InBiolabSpawn
+tp @a[InBiolabSpawn,team=BiolabBlue,m=2] 496.0 52 108.0 -90 0
+tp @a[InBiolabSpawn,team=BiolabRed,m=2] 470.0 52 108.0 90 0
+
+// Reset Experience
+scoreboard players reset @a[InBiolabSpawn,m=2] BiolabCPL
+scoreboard players reset @a[InBiolabSpawn,m=2] BiolabDPL
+scoreboard players reset @a[InBiolabSpawn,m=2] BiolabLD
+// Reset Sneak Timer (Light Assault and Infiltrator)
+scoreboard players reset @a[InBiolabSpawn,m=2] BiolabSneakTimer
+// Reset Carrot On A Stick Statistics (Combat Medic, Infiltrator, and Heavy Assault)
+scoreboard players reset @a[InBiolabSpawn,m=2] BiolabCOS
+// Reset Light Assault
+scoreboard players reset @a[InBiolabSpawn,m=2] BiolabJC
+scoreboard players reset @a[InBiolabSpawn,m=2] BiolabJCP
+scoreboard players tag @a[InBiolabSpawn,m=2] remove LightAssault
+scoreboard players tag @a[InBiolabSpawn,m=2] remove JetpackEnabled
+scoreboard players tag @a[InBiolabSpawn,m=2] remove JetpackDisabled
+scoreboard players tag @a[InBiolabSpawn,m=2] remove JetpackCooldown
+// Reset Infiltrator
+scoreboard players reset @a[InBiolabSpawn,m=2] BiolabCC
+scoreboard players reset @a[InBiolabSpawn,m=2] BiolabLI
+scoreboard players tag @a[InBiolabSpawn,m=2] remove Infiltrator
+scoreboard players tag @a[InBiolabSpawn,m=2] remove CloakEnabled
+scoreboard players tag @a[InBiolabSpawn,m=2] remove CloakDisabled
+scoreboard players tag @a[InBiolabSpawn,m=2] remove CloakCooldown
+// Reset Combat Medic
+scoreboard players reset @a[InBiolabSpawn,m=2] BiolabNRC
+scoreboard players reset @a[InBiolabSpawn,m=2] BiolabNRCP
+scoreboard players tag @a[InBiolabSpawn,m=2] remove CombatMedic
+scoreboard players tag @a[InBiolabSpawn,m=2] remove NanoRegenEnabled
+scoreboard players tag @a[InBiolabSpawn,m=2] remove NanoRegenDisabled
+scoreboard players tag @a[InBiolabSpawn,m=2] remove NanoRegenCooldown
+// Reset Engineer
+scoreboard players tag @a[InBiolabSpawn,m=2] remove Engineer
+scoreboard players operation @e[AmmoPack] BiolabAPO -= @a[InBiolabSpawn,m=2] BiolabPID
+kill @e[AmmoPack,BiolabAPO=0]
+scoreboard players operation @e[AmmoPack] BiolabAPO += @a[InBiolabSpawn,m=2] BiolabPID
+// Reset Heavy Assault
+scoreboard players reset @a[InBiolabSpawn,m=2] BiolabNSC
+scoreboard players reset @a[InBiolabSpawn,m=2] BiolabNSCP
+scoreboard players tag @a[InBiolabSpawn,m=2] remove HeavyAssault
+scoreboard players tag @a[InBiolabSpawn,m=2] remove NaniteShieldEnabled
+scoreboard players tag @a[InBiolabSpawn,m=2] remove NaniteShieldDisabled
+scoreboard players tag @a[InBiolabSpawn,m=2] remove NaniteShieldCooldown
+// Reset MAX
+scoreboard players tag @a[InBiolabSpawn,m=2] remove MAX
+// Finishing touches
+effect @a[InBiolabSpawn,m=2] clear
+replaceitem entity @a[InBiolabSpawn,m=2] slot.hotbar.3 air
+xp -1000000L @a[InBiolabSpawn,m=2]
+scoreboard players tag @a[InBiolabSpawn] remove InBiolabSpawn

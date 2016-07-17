@@ -1,0 +1,171 @@
+// Options
+DEFINE magazinesGiven 3
+
+// Chestplate colors
+//  255  , 16711680, 16711935
+//  blue ,    red  ,  purple
+
+//// Class Selection /////
+:chooseInfiltratorClass PULSE 16 0 1
+scoreboard players tag @p[m=2] add Target
+scoreboard players tag @p[Target] add Infiltrator
+scoreboard players tag @p[Target] add CloakDisabled
+scoreboard players set @p[Target] BiolabCCP maximumCloakTicks
+clear @p[Target]
+replaceitem entity @p[Target] slot.hotbar.0 minecraft:iron_sword 1 0 {display:{Name:"Knife"},Unbreakable:1}
+replaceitem entity @p[Target] slot.hotbar.1 minecraft:snowball 16 0 {display:{Name:"Bullets"}}
+replaceitem entity @p[Target] slot.hotbar.2 minecraft:prismarine_shard magazinesGiven 0 {display:{Name:"Magazine"}}
+replaceitem entity @p[Target] slot.hotbar.3 minecraft:carrot_on_a_stick 1 0 {display:{Name:"Cloaking Device",Lore:["Right-click me to cloak!","Select another slot in your hotbar to uncloak."]}}
+replaceitem entity @p[Target] slot.armor.head minecraft:leather_helmet 1 0 {display:{color:16711935},Unbreakable:1}
+replaceitem entity @p[Target] slot.armor.chest minecraft:leather_chestplate 1 0 {display:{color:16711935},Unbreakable:1}
+replaceitem entity @p[Target] slot.armor.legs minecraft:leather_leggings 1 0 {display:{color:16711935},Unbreakable:1}
+replaceitem entity @p[Target] slot.armor.feet minecraft:leather_boots 1 0 {display:{color:16711935},Unbreakable:1}
+xp 80L @p[Target]
+tellraw @p[Target] ["",{"text":"[","color":"yellow"},{"text":"Biolab","color":"green"},{"text":"]","color":"yellow"},": ","You have chosen the Infiltrator class!"]
+scoreboard players set @p[tag=Target] BiolabMAX 0
+scoreboard players tag @p[Target] remove Target
+
+:chooseLightAssaultClass PULSE 16 0 1
+scoreboard players tag @p[m=2] add Target
+scoreboard players tag @p[Target] add LightAssault
+scoreboard players tag @p[Target] add JetpackDisabled
+scoreboard players set @p[Target] BiolabJetCharge maximumAirTicks
+clear @p[Target]
+replaceitem entity @p[Target] slot.hotbar.0 minecraft:iron_sword 1 0 {display:{Name:"Knife"},Unbreakable:1}
+replaceitem entity @p[Target] slot.hotbar.1 minecraft:snowball 16 0 {display:{Name:"Bullets"}}
+replaceitem entity @p[Target] slot.hotbar.2 minecraft:prismarine_shard magazinesGiven 0 {display:{Name:"Magazine"}}
+replaceitem entity @p[Target] slot.hotbar.3 minecraft:paper 1 0 {display:{Name:"Jump Jets",Lore:["Hold your sneak key to activate your jump jets!","Reach heights that no other classes can!"]}}
+replaceitem entity @p[Target] slot.armor.head minecraft:leather_helmet 1 0 {display:{color:16711935},Unbreakable:1}
+replaceitem entity @p[Target] slot.armor.chest minecraft:leather_chestplate 1 0 {display:{color:8421504},Unbreakable:1,ench:[{id:"minecraft:protection",lvl:7}]}
+replaceitem entity @p[Target] slot.armor.legs minecraft:leather_leggings 1 0 {display:{color:16711935},Unbreakable:1}
+replaceitem entity @p[Target] slot.armor.feet minecraft:leather_boots 1 0 {display:{color:16711935},Unbreakable:1}
+xp 80L @p[Target]
+tellraw @p[Target] ["",{"text":"[","color":"yellow"},{"text":"Biolab","color":"green"},{"text":"]","color":"yellow"},": ","You have chosen the Light Assault class!"]
+scoreboard players set @p[Target] BiolabMAX 0
+scoreboard players tag @p[Target] remove Target
+
+:chooseEngineerClass PULSE 16 0 1
+scoreboard players tag @p[m=2] add Target
+scoreboard players tag @p[Target] add Engineer
+clear @p[Target]
+replaceitem entity @p[Target] slot.hotbar.0 minecraft:iron_sword 1 0 {display:{Name:"Knife"},Unbreakable:1}
+replaceitem entity @p[Target] slot.hotbar.1 minecraft:snowball 16 0 {display:{Name:"Bullets"}}
+replaceitem entity @p[Target] slot.hotbar.2 minecraft:prismarine_shard magazinesGiven 0 {display:{Name:"Magazine"}}
+replaceitem entity @p[Target] slot.hotbar.3 minecraft:stone_slab 1 0 {display:{Name:"Ammo Pack",Lore:["I give players ammo.","Drop me on the ground to use!"]}}
+replaceitem entity @p[Target] slot.armor.head minecraft:leather_helmet 1 0 {display:{color:16711935},Unbreakable:1}
+replaceitem entity @p[Target] slot.armor.chest minecraft:leather_chestplate 1 0 {display:{color:16776960},Unbreakable:1,ench:[{id:"minecraft:protection",lvl:7}]}
+replaceitem entity @p[Target] slot.armor.legs minecraft:leather_leggings 1 0 {display:{color:16711935},Unbreakable:1}
+replaceitem entity @p[Target] slot.armor.feet minecraft:leather_boots 1 0 {display:{color:16711935},Unbreakable:1}
+tellraw @p[Target] ["",{"text":"[","color":"yellow"},{"text":"Biolab","color":"green"},{"text":"]","color":"yellow"},": ","You have chosen the Engineer class!"]
+scoreboard players set @p[Target] BiolabMAX 0
+scoreboard players tag @p[Target] remove Target
+
+:chooseCombatMedicClass PULSE 16 0 1
+scoreboard players tag @p[m=2] add Target
+scoreboard players tag @p[Target] add CombatMedic
+scoreboard players tag @p[Target] add NanoRegenDisabled
+scoreboard players set @p[Target] BiolabNRCP maximumNanoRegenTicks
+clear @p[Target]
+replaceitem entity @p[Target] slot.hotbar.0 minecraft:iron_sword 1 0 {display:{Name:"Knife"},Unbreakable:1}
+replaceitem entity @p[Target] slot.hotbar.1 minecraft:snowball 16 0 {display:{Name:"Bullets"}}
+replaceitem entity @p[Target] slot.hotbar.2 minecraft:prismarine_shard magazinesGiven 0 {display:{Name:"Magazine"}}
+replaceitem entity @p[Target] slot.hotbar.3 minecraft:carrot_on_a_stick 1 0 {display:{Name:"Nano Regen Device",Lore:["Right-click me to toggle an area of effect Regeneration!"]}}
+replaceitem entity @p[Target] slot.armor.head minecraft:leather_helmet 1 0 {display:{color:16711935},Unbreakable:1}
+replaceitem entity @p[Target] slot.armor.chest minecraft:leather_chestplate 1 0 {display:{color:16777215},Unbreakable:1,ench:[{id:"minecraft:protection",lvl:7}]}
+replaceitem entity @p[Target] slot.armor.legs minecraft:leather_leggings 1 0 {display:{color:16711935},Unbreakable:1}
+replaceitem entity @p[Target] slot.armor.feet minecraft:leather_boots 1 0 {display:{color:16711935},Unbreakable:1}
+xp 400L @p[Target]
+tellraw @p[Target] ["",{"text":"[","color":"yellow"},{"text":"Biolab","color":"green"},{"text":"]","color":"yellow"},": ","You have chosen the Combat Medic class!"]
+scoreboard players set @p[Target] BiolabMAX 0
+scoreboard players tag @p[Target] remove Target
+
+:chooseHeavyAssaultClass PULSE 16 0 1
+scoreboard players tag @p[m=2] add Target
+scoreboard players tag @p[Target] add HeavyAssault
+scoreboard players tag @p[Target] add NaniteShieldDisabled
+scoreboard players set @p[Target] BiolabNSCP maximumNaniteShieldTicks
+clear @p[Target]
+replaceitem entity @p[Target] slot.hotbar.0 minecraft:iron_sword 1 0 {display:{Name:"Knife"},Unbreakable:1}
+replaceitem entity @p[Target] slot.hotbar.1 minecraft:snowball 16 0 {display:{Name:"Bullets"}}
+replaceitem entity @p[Target] slot.hotbar.2 minecraft:prismarine_shard magazinesGiven 0 {display:{Name:"Magazine"}}
+replaceitem entity @p[Target] slot.hotbar.3 minecraft:carrot_on_a_stick 1 0 {display:{Name:"Nanite Shield Activator",Lore:["Right-click me to toggle your shield!"]}}
+replaceitem entity @p[Target] slot.armor.head minecraft:leather_helmet 1 0 {display:{color:16711935},Unbreakable:1}
+replaceitem entity @p[Target] slot.armor.chest minecraft:leather_chestplate 1 0 {display:{color:172311},Unbreakable:1,ench:[{id:"minecraft:protection",lvl:10}]}
+replaceitem entity @p[Target] slot.armor.legs minecraft:leather_leggings 1 0 {display:{color:16711935},Unbreakable:1}
+replaceitem entity @p[Target] slot.armor.feet minecraft:leather_boots 1 0 {display:{color:16711935},Unbreakable:1}
+xp 300L @p[Target]
+tellraw @p[Target] ["",{"text":"[","color":"yellow"},{"text":"Biolab","color":"green"},{"text":"]","color":"yellow"},": ","You have chosen the Heavy Assault class!"]
+scoreboard players set @p[Target] BiolabMAX 0
+scoreboard players tag @p[Target] remove Target
+
+// TODO: Resource cost for MAXs
+:chooseMAXClass PULSE 16 0 1
+scoreboard players tag @p[m=2] add Target
+scoreboard players tag @p[Target] add MAX
+effect @p[Target] minecraft:slowness 1000000 0
+clear @p[Target]
+replaceitem entity @p[Target] slot.hotbar.0 minecraft:iron_sword 1 0 {display:{Name:"Knife"},Unbreakable:1}
+replaceitem entity @p[Target] slot.hotbar.1 minecraft:snowball 16 0 {display:{Name:"Bullets"}}
+replaceitem entity @p[Target] slot.hotbar.2 minecraft:prismarine_shard magazinesGiven 0 {display:{Name:"Magazine"}}
+replaceitem entity @p[Target] slot.armor.head minecraft:leather_helmet 1 0 {display:{color:16711935},Unbreakable:1}
+replaceitem entity @p[Target] slot.armor.chest minecraft:leather_chestplate 1 0 {display:{color:0},Unbreakable:1,ench:[{id:"minecraft:protection",lvl:14}]}
+replaceitem entity @p[Target] slot.armor.legs minecraft:leather_leggings 1 0 {display:{color:16711935},Unbreakable:1}
+replaceitem entity @p[Target] slot.armor.feet minecraft:leather_boots 1 0 {display:{color:16711935},Unbreakable:1}
+tellraw @p[Target] ["",{"text":"[","color":"yellow"},{"text":"Biolab","color":"green"},{"text":"]","color":"yellow"},": ","You have chosen the MAX class!"]
+effect @p[Target] health_boost 999999 2
+effect @p[Target] instant_health 1 10
+scoreboard players set @p[Target] BiolabMAX 0
+scoreboard players set @p[Target] BiolabMAX 1
+scoreboard players tag @p[Target] remove Target
+
+:deselectClass PULSE 16 0 1
+scoreboard players tag @p[m=2] add Target
+// Reset Experience
+scoreboard players reset @p[Target] BiolabCPL
+scoreboard players reset @p[Target] BiolabDPL
+scoreboard players reset @p[Target] BiolabLD
+// Reset Sneak Timer (Light Assault and Infiltrator)
+scoreboard players reset @p[Target] BiolabSneakTimer
+// Reset Carrot On A Stick Statistics (Combat Medic, Infiltrator, and Heavy Assault)
+scoreboard players reset @p[Target] BiolabCOS
+// Reset Light Assault
+scoreboard players reset @p[Target] BiolabJC
+scoreboard players reset @p[Target] BiolabJCP
+scoreboard players tag @p[Target] remove LightAssault
+scoreboard players tag @p[Target] remove JetpackEnabled
+scoreboard players tag @p[Target] remove JetpackDisabled
+scoreboard players tag @p[Target] remove JetpackCooldown
+// Reset Infiltrator
+scoreboard players reset @p[Target] BiolabCC
+scoreboard players reset @p[Target] BiolabLI
+scoreboard players tag @p[Target] remove Infiltrator
+scoreboard players tag @p[Target] remove CloakEnabled
+scoreboard players tag @p[Target] remove CloakDisabled
+scoreboard players tag @p[Target] remove CloakCooldown
+// Reset Combat Medic
+scoreboard players reset @p[Target] BiolabNRC
+scoreboard players reset @p[Target] BiolabNRCP
+scoreboard players tag @p[Target] remove CombatMedic
+scoreboard players tag @p[Target] remove NanoRegenEnabled
+scoreboard players tag @p[Target] remove NanoRegenDisabled
+scoreboard players tag @p[Target] remove NanoRegenCooldown
+// Reset Engineer
+scoreboard players tag @p[Target] remove Engineer
+scoreboard players operation @e[AmmoPack] BiolabAPO -= @p[Target] BiolabPID
+kill @e[AmmoPack,BiolabAPO=0]
+scoreboard players operation @e[AmmoPack] BiolabAPO += @p[Target] BiolabPID
+// Reset Heavy Assault
+scoreboard players reset @p[Target] BiolabNSC
+scoreboard players reset @p[Target] BiolabNSCP
+scoreboard players tag @p[Target] remove HeavyAssault
+scoreboard players tag @p[Target] remove NaniteShieldEnabled
+scoreboard players tag @p[Target] remove NaniteShieldDisabled
+scoreboard players tag @p[Target] remove NaniteShieldCooldown
+// Reset MAX
+scoreboard players tag @p[Target] remove MAX
+// Finishing touches
+effect @p[Target] clear
+clear @p[Target]
+xp -1000000L @p[Target]
+tellraw @p[Target] ["",{"text":"[","color":"yellow"},{"text":"Biolab","color":"green"},{"text":"]","color":"yellow"},": ","You have deselected your current class."]
+scoreboard players tag @p[Target] remove Target

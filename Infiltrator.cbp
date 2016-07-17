@@ -1,0 +1,89 @@
+// Infiltrator Options
+DEFINE maximumCloakTicks 8000
+DEFINE cloakCooldownTime 2000
+DEFINE cloakRechargeRate 100
+DEFINE cloakDischargeRate 33
+
+//// Infiltrator ////
+FUNC enableInfiltratorCloaking
+	scoreboard objectives add BiolabCC dummy Biolab Cloak Charge
+	scoreboard objectives add BiolabCCP dummy BiolabCC Precision
+	scoreboard objectives add BiolabSneakTimer stat.sneakTime Biolab Sneak Timer
+	scoreboard objectives add BiolabCOS stat.useItem.minecraft.carrot_on_a_stick Biolab C.o.S.
+	scoreboard players set 100 BiolabTemp 100
+	activate(infiltratorCloak)
+END
+
+:infiltratorCloak CLOCK 16 0 1
+scoreboard players tag @a[InFourthSlot] remove InFourthSlot
+scoreboard players tag @a[Infiltrator] add InFourthSlot {SelectedItemSlot:3}
+
+scoreboard players tag @a[Infiltrator,BiolabCOS=1] remove CloakDisabled
+@a[Infiltrator] @a[!CloakDisabled,r=0,c=1] @a[!CloakEnabled,r=0,c=1] playsound entity.donkey.hurt voice @a ~ ~ ~ 0.5 0.5
+scoreboard players tag @a[Infiltrator,BiolabCOS=1] add CloakEnabled
+@a[CloakCooldown,BiolabCCP<cloakCooldownTime] BiolabCOS = 0
+scoreboard players tag @a[BiolabCCP>=cloakCooldownTime] remove CloakCooldown
+
+scoreboard players tag @a[Infiltrator,BiolabCOS=0] remove CloakEnabled
+@a[Infiltrator] @a[!CloakDisabled,r=0,c=1] @a[!CloakEnabled,r=0,c=1] playsound entity.donkey.hurt voice @a ~ ~ ~ 0.5 0.5
+scoreboard players tag @a[Infiltrator,BiolabCOS=0] add CloakDisabled
+
+scoreboard players tag @a[BiolabCCP=0] remove CloakEnabled
+@a[Infiltrator] @a[!CloakDisabled,r=0,c=1] @a[!CloakEnabled,r=0,c=1] playsound entity.donkey.hurt voice @a ~ ~ ~ 0.5 0.5
+scoreboard players tag @a[BiolabCCP=0] add CloakDisabled
+scoreboard players tag @a[BiolabCCP=0] add CloakCooldown
+
+USE @a[Infiltrator]
+	effect @p[CloakDisabled,r=0] minecraft:invisibility 0
+	
+	effect @p[CloakEnabled,BiolabSneakTimer>0,r=0] minecraft:invisibility maximumCloakTicks 0 true
+	effect @p[CloakEnabled,BiolabSneakTimer=0,r=0] minecraft:invisibility maximumCloakTicks 0 false
+UNUSE
+
+replaceitem entity @a[CloakDisabled] slot.hotbar.3 minecraft:carrot_on_a_stick 1 0 {display:{Name:"Cloaking Device",Lore:["Right-click me to cloak!","Select another slot in your hotbar to uncloak."]}}
+
+replaceitem entity @a[CloakDisabled,team=BiolabBlue] slot.armor.head minecraft:leather_helmet 1 0 {display:{color:255},Unbreakable:1}
+replaceitem entity @a[CloakDisabled,team=BiolabBlue] slot.armor.chest minecraft:leather_chestplate 1 0 {display:{color:255},Unbreakable:1}
+replaceitem entity @a[CloakDisabled,team=BiolabBlue] slot.armor.legs minecraft:leather_leggings 1 0 {display:{color:255},Unbreakable:1}
+replaceitem entity @a[CloakDisabled,team=BiolabBlue] slot.armor.feet minecraft:leather_boots 1 0 {display:{color:255},Unbreakable:1}
+
+replaceitem entity @a[CloakDisabled,team=BiolabRed] slot.armor.head minecraft:leather_helmet 1 0 {display:{color:16711680},Unbreakable:1}
+replaceitem entity @a[CloakDisabled,team=BiolabRed] slot.armor.chest minecraft:leather_chestplate 1 0 {display:{color:16711680},Unbreakable:1}
+replaceitem entity @a[CloakDisabled,team=BiolabRed] slot.armor.legs minecraft:leather_leggings 1 0 {display:{color:16711680},Unbreakable:1}
+replaceitem entity @a[CloakDisabled,team=BiolabRed] slot.armor.feet minecraft:leather_boots 1 0 {display:{color:16711680},Unbreakable:1}
+
+replaceitem entity @a[CloakDisabled,team=BiolabPurple] slot.armor.head minecraft:leather_helmet 1 0 {display:{color:16711935},Unbreakable:1}
+replaceitem entity @a[CloakDisabled,team=BiolabPurple] slot.armor.chest minecraft:leather_chestplate 1 0 {display:{color:16711935},Unbreakable:1}
+replaceitem entity @a[CloakDisabled,team=BiolabPurple] slot.armor.legs minecraft:leather_leggings 1 0 {display:{color:16711935},Unbreakable:1}
+replaceitem entity @a[CloakDisabled,team=BiolabPurple] slot.armor.feet minecraft:leather_boots 1 0 {display:{color:16711935},Unbreakable:1}
+
+replaceitem entity @a[CloakEnabled] slot.hotbar.3 air
+replaceitem entity @a[CloakEnabled] slot.armor.head air
+replaceitem entity @a[CloakEnabled] slot.armor.chest air
+replaceitem entity @a[CloakEnabled] slot.armor.legs air
+replaceitem entity @a[CloakEnabled] slot.armor.feet air
+@a[CloakEnabled] BiolabCCP - cloakDischargeRate
+@a[CloakEnabled] scoreboard players set @p[!InFourthSlot,r=0] BiolabCOS 0
+
+@a[Infiltrator,BiolabCCP<0] BiolabCCP = 0
+@a[Infiltrator,BiolabCCP>maximumCloakTicks] BiolabCCP = maximumCloakTicks
+@a[CloakDisabled,BiolabCCP<maximumCloakTicks] BiolabCCP + cloakRechargeRate
+scoreboard players set @a[Infiltrator] BiolabSneakTimer 0
+
+@a[Infiltrator] BiolabCC = BiolabCCP
+@a[Infiltrator] BiolabCC / 100
+@a[Infiltrator] BiolabDPL = BiolabCC
+
+FUNC disableInfiltratorCloaking
+	deactivate(infiltratorCloak)
+	scoreboard objectives remove BiolabSneakTimer
+	scoreboard objectives remove BiolabCOS
+	scoreboard objectives remove BiolabCC
+	scoreboard objectives remove BiolabCCP
+	scoreboard objectives remove BiolabLI
+	scoreboard players tag * remove Infiltrator
+	scoreboard players tag * remove CloakEnabled
+	scoreboard players tag * remove CloakDisabled
+	scoreboard players tag * remove CloakCooldown
+	scoreboard players tag * remove InFourthSlot
+END

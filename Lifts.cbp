@@ -1,0 +1,55 @@
+// Lift Options
+DEFINE liftHeight 22
+DEFINE liftMaxClearHeight 72
+
+//// Biolab Lift Controls /////
+:southLift CLOCK 16 0 1
+scoreboard players tag @a[x=-101,y=45,z=-1127,dx=-7,dy=liftMaxClearHeight,dz=2] remove InLift
+
+scoreboard players tag @a[x=-102,y=45,z=-1126,dy=liftHeight] add InLift
+scoreboard players tag @a[x=-107,y=45,z=-1126,dy=liftHeight] add InLift
+scoreboard players tag @a[x=-104,y=45,z=-1126,dx=-1,dy=liftHeight] add InLift
+
+effect @a[x=-102,y=45,z=-1126,dy=liftHeight] minecraft:levitation 1 245 true
+effect @a[x=-107,y=45,z=-1126,dy=liftHeight] minecraft:levitation 1 245 true
+effect @a[x=-104,y=45,z=-1126,dx=-1,dy=liftHeight] minecraft:levitation 1 6 true
+effect @a[x=-102,y=45,z=-1126,dy=liftHeight] minecraft:jump_boost 2 255 true
+effect @a[x=-107,y=45,z=-1126,dy=liftHeight] minecraft:jump_boost 2 255 true
+effect @a[x=-104,y=45,z=-1126,dx=-1,dy=liftHeight] minecraft:jump_boost 2 255 true
+
+@a[!InLift,x=-101,y=45,z=-1127,dx=-7,dy=liftMaxClearHeight,z=2] effect @p[!JetpackEnabled,r=0] minecraft:levitation 0
+
+particle reddust -102 45 -1126 0.25 8 0.25 0 5 None @a Force
+particle reddust -107 45 -1126 0.25 8 0.25 0 5 None @a Force
+particle magicCrit -104.0 45 -1126 0.5 8 0.25 0 20 None @a Force
+
+:northLift CLOCK 16 0 1
+scoreboard players tag @a[x=-108,y=45,z=-1256,dx=7,dy=liftMaxClearHeight,dz=-2] remove InLift
+
+scoreboard players tag @a[x=-102,y=45,z=-1257,dy=liftHeight] add InLift
+scoreboard players tag @a[x=-107,y=45,z=-1257,dy=liftHeight] add InLift
+scoreboard players tag @a[x=-104,y=45,z=-1257,dx=-1,dy=liftHeight] add InLift
+
+effect @a[x=-102,y=45,z=-1257,dy=liftHeight] minecraft:levitation 1 245 true
+effect @a[x=-107,y=45,z=-1257,dy=liftHeight] minecraft:levitation 1 245 true
+effect @a[x=-104,y=45,z=-1257,dx=-1,dy=liftHeight] minecraft:levitation 1 6 true
+effect @a[x=-102,y=45,z=-1257,dy=liftHeight] minecraft:jump_boost 2 255 true
+effect @a[x=-107,y=45,z=-1257,dy=liftHeight] minecraft:jump_boost 2 255 true
+effect @a[x=-104,y=45,z=-1257,dx=-1,dy=liftHeight] minecraft:jump_boost 2 255 true
+
+@a[!InLift,x=-108,y=45,z=-1256,dx=7,dy=liftMaxClearHeight,dz=-2] effect @p[!JetpackEnabled,r=0] minecraft:levitation 0
+
+particle reddust -102 45 -1257 0.25 8 0.25 0 5 None @a Force
+particle reddust -107 45 -1257 0.25 8 0.25 0 5 None @a Force
+particle magicCrit -104.0 45 -1257 0.5 8 0.25 0 20 None @a Force
+
+FUNC enableLifts
+	activate(northLift)
+	activate(southLift)
+END
+
+FUNC disableLifts
+	deactivate(northLift)
+	deactivate(southLift)
+	scoreboard players tag * remove InLift
+END

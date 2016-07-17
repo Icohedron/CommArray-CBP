@@ -1,0 +1,62 @@
+// Weapon Options
+DEFINE snowballSpottingRange 2
+DEFINE snowballDamage 0
+DEFINE snowballDelay 2
+DEFINE reloadTime 30
+
+//// Weapons ////
+FUNC enableWeapons
+	scoreboard objectives add BiolabUS stat.useItem.minecraft.snowball Use Snowball
+	scoreboard objectives add BiolabRT dummy Reload Timer
+	scoreboard objectives add BiolabSnT dummy Snowball Timer
+	activate(weapons)
+END
+
+:weapons CLOCK 16 0 1
+// Clear all dropped items except Ammo Packs
+scoreboard players tag @e[type=Item] add AmmoPack {Item:{id:"minecraft:stone_slab"}}
+kill @e[x=458,y=54,z=183,dx=50,dy=47,dz=-121,type=Item,!AmmoPack]
+entitydata @e[type=Snowball] {NoGravity:1}
+
+// Snowball damage and effects
+@p[BiolabUS>0,team=BiolabBlue] scoreboard players tag @e[type=Snowball,c=1] add BlueSnowball
+@p[BiolabUS>0,team=BiolabRed] scoreboard players tag @e[type=Snowball,c=1] add RedSnowball
+@p[BiolabUS>0,team=BiolabPurple] scoreboard players tag @e[type=Snowball,c=1] add PurpleSnowball
+scoreboard players set @a[BiolabUS>0] BiolabUS 0
+
+@e[BlueSnowball] @a[r=snowballSpottingRange,team=!BiolabBlue] effect @p[r=0] minecraft:glowing 5 0
+@e[RedSnowball] @a[r=snowballSpottingRange,team=!BiolabRed] effect @p[r=0] minecraft:glowing 5 0
+@e[PurpleSnowball] @a[r=snowballSpottingRange,team=!BiolabPurple] effect @p[r=0] minecraft:glowing 5 0
+
+@e[BlueSnowball] particle reddust ~ ~ ~ -1 0 1 -0.05
+@e[RedSnowball] particle reddust ~ ~ ~ 0 0 0 -0.05
+@e[PurpleSnowball] particle reddust ~ ~ ~ 0 0 1 -0.05
+@e[x=-3,y=150,z=-1085,dx=-202,dy=-150,dz=-210,type=Snowball] BiolabSnT + 1
+
+@e[BlueSnowball] @a[r=2,team=!BiolabBlue] effect @p[r=0] minecraft:instant_damage 1 snowballDamage
+@e[RedSnowball] @a[r=2,team=!BiolabRed] effect @p[r=0] minecraft:instant_damage 1 snowballDamage
+@e[PurpleSnowball] @a[r=2,team=!BiolabPurple] effect @p[r=0] minecraft:instant_damage 1 snowballDamage
+kill @e[type=Snowball,BiolabSnT>=60]
+
+// Ammo and Reloading System
+scoreboard players tag @a remove HasMagazine
+scoreboard players tag @a add HasMagazine {Inventory:[{id:"minecraft:prismarine_shard",tag:{display:{Name:"Magazine"}}}]}
+
+scoreboard players tag @a remove HasSnowballs
+scoreboard players tag @a add HasSnowballs {Inventory:[{id:"minecraft:snowball",tag:{display:{Name:"Bullets"}}}]}
+
+scoreboard players add @a BiolabRT 0
+@a[!HasSnowballs] scoreboard players set @p[HasMagazine,BiolabRT=0,r=0] BiolabRT 1
+scoreboard players add @a[BiolabRT>0] BiolabRT 1
+clear @a[BiolabRT>=reloadTime] minecraft:prismarine_shard 0 1 {display:{Name:"Magazine"}}
+replaceitem entity @a[BiolabRT>=reloadTime] slot.hotbar.1 minecraft:snowball 16 0 {display:{Name:"Bullets"}}
+@a[BiolabRT>=reloadTime] scoreboard players set @p[r=0] BiolabRT 0
+
+FUNC disableWeapons
+	deactivate(weapons)
+	scoreboard objectives remove BiolabUS
+	scoreboard objectives remove BiolabRT
+	scoreboard objectives remove BiolabSnT
+	scoreboard players tag * remove HasMagazine
+	scoreboard players tag * remove HasSnowballs
+END

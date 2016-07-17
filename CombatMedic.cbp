@@ -1,0 +1,65 @@
+// Combat Medic Options
+DEFINE maximumNanoRegenTicks 40000
+DEFINE nanoRegenCooldownTime 2000
+DEFINE nanoRegenRechargeRate 100
+DEFINE nanoRegenDischargeRate 200
+DEFINE nanoRegenRadius 5
+DEFINE nanoRegenParticleEffectRadius 2
+DEFINE nanoRegenParticleCount 2
+
+//// Combat Medic ////
+FUNC enableCombatMedicNanoRegening
+	scoreboard objectives add BiolabNRC dummy Nano Regen Charge
+	scoreboard objectives add BiolabReT dummy Biolab Regen Timer
+	scoreboard objectives add BiolabNRCP dummy BiolabNRC Precision
+	scoreboard objectives add BiolabCOS stat.useItem.minecraft.carrot_on_a_stick Biolab C.o.S.
+	scoreboard players set 100 BiolabTemp 100
+	activate(combatMedicNanoRegen)
+END
+
+:combatMedicNanoRegen CLOCK 16 0 1
+scoreboard players set @a[CombatMedic,BiolabCOS=2] BiolabCOS 0
+
+scoreboard players tag @a[CombatMedic,BiolabCOS=1] remove NanoRegenDisabled
+scoreboard players tag @a[CombatMedic,BiolabCOS=1] add NanoRegenEnabled
+@a[NanoRegenCooldown,BiolabNRCP<nanoRegenCooldownTime] BiolabCOS = 0
+scoreboard players tag @a[BiolabNRCP>=nanoRegenCooldownTime] remove NanoRegenCooldown
+
+scoreboard players tag @a[CombatMedic,BiolabCOS=0] remove NanoRegenEnabled
+scoreboard players tag @a[CombatMedic,BiolabCOS=0] add NanoRegenDisabled
+@a[CombatMedic,BiolabCOS=0] BiolabReT = 60
+
+scoreboard players tag @a[BiolabNRCP=0] remove NanoRegenEnabled
+scoreboard players tag @a[BiolabNRCP=0] add NanoRegenDisabled
+scoreboard players tag @a[BiolabNRCP=0] add NanoRegenCooldown
+
+//@a[CombatMedic,team=BiolabBlue] effect @p[!MAX,team=BiolabBlue,rm=1,r=5] minecraft:regeneration 3 1
+//@a[CombatMedic,team=BiolabRed] effect @p[!MAX,team=BiolabRed,rm=1,r=5] minecraft:regeneration 3 1
+
+@a[NanoRegenEnabled,team=BiolabBlue,BiolabReT>=60] ~-nanoRegenRadius ~-nanoRegenRadius ~-nanoRegenRadius effect @a[!MAX,dx=nanoRegenRadius,dy=nanoRegenRadius,dz=nanoRegenRadius,team=BiolabBlue] minecraft:regeneration 3 1
+@a[NanoRegenEnabled,team=BiolabRed,BiolabReT>=60] ~-nanoRegenRadius ~-nanoRegenRadius ~-nanoRegenRadius effect @a[!MAX,dx=nanoRegenRadius,dy=nanoRegenRadius,dz=nanoRegenRadius,team=BiolabRed] minecraft:regeneration 3 1
+@a[NanoRegenEnabled] particle happyVillager ~ ~1 ~ nanoRegenParticleEffectRadius nanoRegenParticleEffectRadius nanoRegenParticleEffectRadius 0 nanoRegenParticleCount
+@a[NanoRegenEnabled] BiolabReT + 1
+
+@a[NanoRegenEnabled] BiolabNRCP - nanoRegenDischargeRate
+
+@a[CombatMedic,BiolabNRCP<0] BiolabNRCP = 0
+@a[CombatMedic,BiolabNRCP>maximumNanoRegenTicks] BiolabNRCP = maximumNanoRegenTicks
+@a[NanoRegenDisabled,BiolabNRCP<maximumNanoRegenTicks] BiolabNRCP + nanoRegenRechargeRate
+
+@a[CombatMedic] BiolabNRC = BiolabNRCP
+@a[CombatMedic] BiolabNRC / 100
+@a[CombatMedic] BiolabDPL = BiolabNRC
+@a[BiolabReT>60] BiolabReT = 0
+
+FUNC disableCombatMedicNanoRegening
+	deactivate(combatMedicNanoRegen)
+	scoreboard objectives remove BiolabCOS
+	scoreboard objectives remove BiolabNRC
+	scoreboard objectives remove BiolabNRCP
+	scoreboard objectives remove BiolabReT
+	scoreboard players tag * remove CombatMedic
+	scoreboard players tag * remove NanoRegenEnabled
+	scoreboard players tag * remove NanoRegenDisabled
+	scoreboard players tag * remove NanoRegenCooldown
+END

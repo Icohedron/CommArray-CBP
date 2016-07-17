@@ -1,0 +1,50 @@
+// Engineer Options
+DEFINE ammoPackRadius 3
+DEFINE magazinesGiven 3
+
+//// Engineer ////
+FUNC enableEngineerAbilities
+	scoreboard objectives add BiolabAPO dummy Ammo Pack Owner
+	activate(engineerAbilities)
+END
+
+:engineerAbilities CLOCK 16 0 1
+scoreboard players add @e[AmmoPack] BiolabAPO 0
+entitydata @e[AmmoPack,BiolabAPO=0] {PickupDelay:32767,CustomName:"Ammo Pack",CustomNameVisible:1b}
+
+// MAX repair
+@e[Engineer,team=BiolabBlue,BiolabReT>=60] effect @p[MAX,team=BiolabBlue,rm=1,r=5] minecraft:regeneration 3 1
+@e[Engineer,team=BiolabRed,BiolabReT>=60] effect @p[MAX,team=BiolabRed,rm=1,r=5] minecraft:regeneration 3 1
+@e[Engineer] BiolabReT + 1
+
+// Ammo Pack Ownership
+scoreboard players tag @e[AmmoPack,BiolabAPO=0,c=1] add CurrentAmmoPackCalc
+@e[CurrentAmmoPackCalc] scoreboard players tag @p[Engineer] add CurrentEngineerCalc
+
+scoreboard players operation @e[AmmoPack] BiolabAPO -= @p[CurrentEngineerCalc] BiolabPID
+kill @e[AmmoPack,BiolabAPO=0]
+scoreboard players operation @e[AmmoPack] BiolabAPO += @p[CurrentEngineerCalc] BiolabPID
+
+@p[CurrentEngineerCalc,team=BiolabBlue] scoreboard players tag @e[CurrentAmmoPackCalc] add BlueAmmoPack
+@p[CurrentEngineerCalc,team=BiolabRed] scoreboard players tag @e[CurrentAmmoPackCalc] add RedAmmoPack
+
+@p[CurrentEngineerCalc,team=BiolabBlue] scoreboard teams join BiolabCPBlue @e[CurrentAmmoPackCalc]
+@p[CurrentEngineerCalc,team=BiolabRed] scoreboard teams join BiolabCPRed @e[CurrentAmmoPackCalc]
+
+scoreboard players operation @e[CurrentAmmoPackCalc] BiolabAPO = @p[CurrentEngineerCalc] BiolabPID
+
+scoreboard players tag @e[CurrentEngineerCalc] remove CurrentEngineerCalc
+scoreboard players tag @e[CurrentAmmoPackCalc] remove CurrentAmmoPackCalc
+
+// Ammo Pack Supply
+replaceitem entity @a[Engineer] slot.hotbar.3 minecraft:stone_slab 1 0 {display:{Name:"Ammo Pack",Lore:["I give players ammo.","Drop me on the ground to use!"]}}
+@e[BlueAmmoPack] replaceitem entity @a[team=BiolabBlue,r=ammoPackRadius] slot.hotbar.2 minecraft:prismarine_shard magazinesGiven 0 {display:{Name:"Magazine"}}
+@e[RedAmmoPack] replaceitem entity @a[team=BiolabRed,r=ammoPackRadius] slot.hotbar.2 minecraft:prismarine_shard magazinesGiven 0 {display:{Name:"Magazine"}}
+
+@a[BiolabReT>60] BiolabReT = 0
+
+FUNC disableEngineerAbilities
+	deactivate(engineerAbilities)
+	scoreboard objectives remove BiolabAPO
+	scoreboard players tag * remove Engineer
+END

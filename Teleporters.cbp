@@ -1,0 +1,51 @@
+//// Teleporters (Two-Way) ////
+FUNC addTeleporter
+	summon ArmorStand |1| |2| |3| {CustomName:"|0|",CustomNameVisible:1b,Tags:["BiolabTeleporter","|0|1","|9|"],Marker:1b,Invulnerable:1b:,NoGravity:1b,Invisible:1b,PersistenceRequired:1b,Rotation:[|4|,0.0f,0.0f]}
+	summon ArmorStand |5| |6| |7| {CustomName:"|0|",CustomNameVisible:1b,Tags:["BiolabTeleporter","|0|2","|9|"],Marker:1b,Invulnerable:1b:,NoGravity:1b,Invisible:1b,PersistenceRequired:1b,Rotation:[|8|,0.0f,0.0f]}
+END
+
+FUNC enableTeleporters
+	addTeleporter(Blue_Spawn;496;53;104;0.0f;481;74.5;70;-90.0f;BiolabBlue)
+	addTeleporter(Red_Spawn;469;53;111;180.0f;480;70;165;-45.0f;BiolabRed)
+	activate(teleporters)
+END
+
+FUNC updateTeamTeleporter
+	@e[|0|1] scoreboard players tag @a[!InTeleporter,r=1,team=|1|] add Teleporting
+	@e[|0|1] tp @a[!InTeleporter,r=1,team=|1|] @e[|0|2]
+	@e[|0|2] scoreboard players tag @a[Teleporting] add InTeleporter
+	
+	@e[|0|2] scoreboard players tag @a[!InTeleporter,r=1,team=|1|] add Teleporting
+	@e[|0|2] tp @a[!InTeleporter,r=1,team=|1|] @e[|0|1]
+	@e[|0|1] scoreboard players tag @a[Teleporting] add InTeleporter
+END
+
+FUNC updateTeleporter
+	@e[|0|1] scoreboard players tag @a[!InTeleporter,r=1] add Teleporting
+	@e[|0|1] tp @a[!InTeleporter,r=1] @e[|0|2]
+	@e[|0|2] scoreboard players tag @a[Teleporting] add InTeleporter
+	
+	@e[|0|2] scoreboard players tag @a[!InTeleporter,r=1] add Teleporting
+	@e[|0|2] tp @a[!InTeleporter,r=1] @e[|0|1]
+	@e[|0|1] scoreboard players tag @a[Teleporting] add InTeleporter
+END
+
+:teleporters CLOCK 16 0 1
+updateTeamTeleporter(Blue_Spawn;BiolabBlue)
+updateTeamTeleporter(Red_Spawn;BiolabRed)
+
+@a[Teleporting] @e[BiolabTeleporter,c=1] playsound minecraft:entity.endermen.teleport voice @a ~ ~ ~
+@a[Teleporting] @e[BiolabTeleporter,c=1] scoreboard players tag @a[Teleporting] remove Teleporting
+
+@e[BiolabTeleporter] @e[BiolabBlue,r=1,c=1] particle reddust ~ ~1 ~ -1 0 1 -0.05
+@e[BiolabTeleporter] @e[BiolabRed,r=1,c=1] particle reddust ~ ~1 ~ 0 0 0 -0.05
+@e[BiolabTeleporter] @e[BiolabNeutral,r=1,c=1] particle reddust ~ ~1 ~ 0 1 1 -0.05
+
+@e[BiolabTeleporter] scoreboard players tag @a[r=2,rm=1] remove InTeleporter
+
+FUNC disableTeleporters
+	deactivate(teleporters)
+	kill @e[BiolabTeleporter]
+	scoreboard players tag * remove InTeleporter
+	scoreboard players tag * remove Teleporting
+END

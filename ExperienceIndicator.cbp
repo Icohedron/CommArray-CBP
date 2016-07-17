@@ -1,0 +1,27 @@
+//// Experience Bar Indicator ////
+FUNC enableExperienceIndicator
+	scoreboard objectives add BiolabCPL dummy Current Player Level
+	scoreboard objectives add BiolabDPL dummy Desired Player Level
+	scoreboard objectives add BiolabLD dummy Level Difference
+	activate(updateExperienceIndicator)
+END
+
+:updateExperienceIndicator CLOCK 16 0 1
+@a[BiolabPlayer] BiolabCPL + 0
+@a[BiolabPlayer] BiolabLD + 0
+
+stats entity @a set QueryResult @p BiolabCPL
+@a[BiolabPlayer] xp 0L @p
+
+@a[BiolabPlayer] BiolabLD = BiolabCPL
+@a[BiolabPlayer] BiolabLD - BiolabDPL
+
+xp -1L @a[BiolabLD>0]
+xp 1L @a[BiolabLD<0]
+
+FUNC disableExperienceIndicator
+	deactivate(updateExperienceIndicator)
+	scoreboard objectives remove BiolabCPL
+	scoreboard objectives remove BiolabDPL
+	scoreboard objectives remove BiolabLD
+END

@@ -1,0 +1,154 @@
+//#-p coal_block -print
+// Minecraft Planetside 2 Biolab Engine
+// Made by Icohedron.
+
+//// Notes ////
+// Notification format: ["",{"text":"[","color":"yellow"},{"text":"Indar Comm. Array","color":"green"},{"text":"]","color":"yellow"},": "]
+
+// The following commands need to have the "minecraft:" prefix to them
+// /xp
+// /kill
+// /tp
+// /give
+// /clear
+
+//// Global Definitions ////
+DEFINE deactivate fill |0| coal_block redstone_block
+DEFINE activate fill |0| redstone_block coal_block
+
+IMPORT Teams.cbp
+IMPORT ExperienceIndicator.cbp
+IMPORT Weapons.cbp
+IMPORT Teleporters.cbp
+IMPORT ForceFields.cbp
+IMPORT ControlPoints3.cbp
+IMPORT LightAssault.cbp
+IMPORT Infiltrator.cbp
+IMPORT Engineer.cbp
+IMPORT CombatMedic.cbp
+IMPORT HeavyAssault.cbp
+
+//// Initialization ////
+:initialization PULSE 16 0 1
+gamerule naturalRegeneration false
+scoreboard objectives add BiolabTemp dummy Temporary Biolab Values
+enablePID
+enableExperienceIndicator
+setTeams
+enableControlPoints
+enableWeapons
+enableLightAssaultJetpack
+enableInfiltratorCloaking
+enableCombatMedicNanoRegening
+enableEngineerAbilities
+enableHeavyAssaultNaniteShielding
+activate(forceFields)
+activate(spawnClock)
+scoreboard objectives add BiolabMAX dummy MAX Units
+
+//// Manual Mode ////
+:teleportersOn PULSE 16 0 1
+enableTeleporters
+deactivate(teleportersOn)
+
+//// Game Start ////
+:gameStart PULSE 16 0 1
+kill @e[BiolabCountdown]
+summon AreaEffectCloud ~ ~ ~ {Duration:1201,Tags:["BiolabCountdown"]}
+tellraw @a[BiolabPlayer] ["",{"text":"[","color":"yellow"},{"text":"Indar Comm. Array","color":"green"},{"text":"]","color":"yellow"},": ","Mission begins in 60 seconds."]
+activate(distributePlayers)
+activate(gameCountdown)
+deactivate(gameStart)
+
+//// Game Loop ////
+:gameCountdown CLOCK 16 0 1
+testfor @e[BiolabCountdown] {Age:600}
+CONDITION
+	tellraw @a[BiolabPlayer] ["",{"text":"[","color":"yellow"},{"text":"Indar Comm. Array","color":"green"},{"text":"]","color":"yellow"},": ","Mission begins in 30 seconds."]
+testfor @e[BiolabCountdown] {Age:800}
+CONDITION
+	tellraw @a[BiolabPlayer] ["",{"text":"[","color":"yellow"},{"text":"Indar Comm. Array","color":"green"},{"text":"]","color":"yellow"},": ","Mission begins in 20 seconds."]
+testfor @e[BiolabCountdown] {Age:1000}
+CONDITION
+	tellraw @a[BiolabPlayer] ["",{"text":"[","color":"yellow"},{"text":"Indar Comm. Array","color":"green"},{"text":"]","color":"yellow"},": ","Mission begins in 10 seconds."]
+testfor @e[BiolabCountdown] {Age:1100}
+CONSTART
+	tellraw @a[BiolabPlayer] ["",{"text":"[","color":"yellow"},{"text":"Indar Comm. Array","color":"green"},{"text":"]","color":"yellow"},": ","5"]
+	@a[BiolabPlayer] playsound minecraft:block.note.pling voice @p
+CONEND
+testfor @e[BiolabCountdown] {Age:1120}
+CONSTART
+	tellraw @a[BiolabPlayer] ["",{"text":"[","color":"yellow"},{"text":"Indar Comm. Array","color":"green"},{"text":"]","color":"yellow"},": ","4"]
+	@a[BiolabPlayer] playsound minecraft:block.note.pling voice @p
+CONEND
+testfor @e[BiolabCountdown] {Age:1140}
+CONSTART
+	tellraw @a[BiolabPlayer] ["",{"text":"[","color":"yellow"},{"text":"Indar Comm. Array","color":"green"},{"text":"]","color":"yellow"},": ","3"]
+	@a[BiolabPlayer] playsound minecraft:block.note.pling voice @p
+CONEND
+testfor @e[BiolabCountdown] {Age:1160}
+CONSTART
+	tellraw @a ["",{"text":"[","color":"yellow"},{"text":"Indar Comm. Array","color":"green"},{"text":"]","color":"yellow"},": ","2"]
+	@a[BiolabPlayer] playsound minecraft:block.note.pling voice @p
+CONEND
+testfor @e[BiolabCountdown] {Age:1180}
+CONSTART
+	tellraw @a[BiolabPlayer] ["",{"text":"[","color":"yellow"},{"text":"Indar Comm. Array","color":"green"},{"text":"]","color":"yellow"},": ","1"]
+	@a[BiolabPlayer] playsound minecraft:block.note.pling voice @p
+CONEND
+testfor @e[BiolabCountdown] {Age:1200}
+CONSTART
+	tellraw @a[BiolabPlayer] ["",{"text":"[","color":"yellow"},{"text":"Indar Comm. Array","color":"green"},{"text":"]","color":"yellow"},": ","Begin! The teleporters are now enabled!"]
+	@a[BiolabPlayer] playsound minecraft:entity.wither.death voice @p
+	activate(teleportersOn)
+	deactivate(gameCountdown)
+CONEND
+
+//// Game End ////
+:gameEnd PULSE 16 0 1
+scoreboard players test ScoreCalc BiolabTemp 1 1
+CONSTART
+	tellraw @a[BiolabPlayer] '["",{"text":"[","color":"yellow"},{"text":"Indar Comm. Array","color":"green"},{"text":"]","color":"yellow"},": ","Winning Team: ", {"text":"Blue","color":"blue"}]'
+	@a[team=BiolabBlue,m=2] summon FireworksRocketEntity ~ ~ ~ {LifeTime:15,FireworksItem:{id:fireworks,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Flicker:0,Trail:1,Colors:[65297],FadeColors:[16777215]}]}}}}
+CONEND
+
+scoreboard players test ScoreCalc BiolabTemp 2 2
+CONSTART
+	tellraw @a[BiolabPlayer] '["",{"text":"[","color":"yellow"},{"text":"Indar Comm. Array","color":"green"},{"text":"]","color":"yellow"},": ","Winning Team: ", {"text":"Red","color":"red"}]'
+	@a[team=BiolabRed,m=2] summon FireworksRocketEntity ~ ~ ~ {LifeTime:15,FireworksItem:{id:fireworks,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Flicker:0,Trail:1,Colors:[65297],FadeColors:[16777215]}]}}}}
+CONEND
+
+scoreboard players test ScoreCalc BiolabTemp 3 3
+CONSTART
+	tellraw @a[BiolabPlayer] '["",{"text":"[","color":"yellow"},{"text":"Indar Comm. Array","color":"green"},{"text":"]","color":"yellow"},": ","Winning Teams: ", {"text":"Blue","color":"blue"}," and ",{"text":"Red","color":"red"}]'
+	@a[team=BiolabBlue,m=2] summon FireworksRocketEntity ~ ~ ~ {LifeTime:15,FireworksItem:{id:fireworks,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Flicker:0,Trail:1,Colors:[65297],FadeColors:[16777215]}]}}}}
+	@a[team=BiolabRed,m=2] summon FireworksRocketEntity ~ ~ ~ {LifeTime:15,FireworksItem:{id:fireworks,Count:1,tag:{Fireworks:{Explosions:[{Type:0,Flicker:0,Trail:1,Colors:[65297],FadeColors:[16777215]}]}}}}
+CONEND
+
+tellraw @a[BiolabPlayer] ["",{"text":"[","color":"yellow"},{"text":"Indar Comm. Array","color":"green"},{"text":"]","color":"yellow"},": ","Blue team players: ",{"selector":"@a[team=BiolabBlue,m=2]"}]
+tellraw @a[BiolabPlayer] ["",{"text":"[","color":"yellow"},{"text":"Indar Comm. Array","color":"green"},{"text":"]","color":"yellow"},": ","Red team players: ",{"selector":"@a[team=BiolabRed,m=2]"}]
+
+deactivate(gameEnd)
+
+//// Deinitialization ////
+:deinitialization PULSE 16 0 1
+deactivate(gameCountdown)
+deactivate(spawnClock)
+deactivate(forceFields)
+disableTeleporters
+disableControlPoints
+removeTeams
+disableWeapons
+disableHeavyAssaultNaniteShielding
+disableEngineerAbilities
+disableCombatMedicNanoRegening
+disableInfiltratorCloaking
+disableLightAssaultJetpack
+disableExperienceIndicator
+disablePID
+scoreboard objectives remove BiolabTemp
+effect @a[x=458,y=54,z=183,dx=50,dy=47,dz=-121,m=2] clear
+clear @a[x=458,y=54,z=183,dx=50,dy=47,dz=-121,m=2]
+kill @e[x=458,y=54,z=183,dx=50,dy=47,dz=-121,type=!Player]
+tp @a[x=458,y=54,z=183,dx=50,dy=47,dz=-121,m=2] 483.0 52 108.0 0 0
+gamerule naturalRegeneration true

@@ -1,0 +1,59 @@
+// Heavy Assault Options
+DEFINE maximumNaniteShieldTicks 30000
+DEFINE naniteShieldCooldownTime 2000
+DEFINE naniteShieldRechargeRate 100
+DEFINE naniteShieldDischargeRate 80
+
+//// Heavy Assault ////
+FUNC enableHeavyAssaultNaniteShielding
+	scoreboard objectives add BiolabNSC dummy Nano Regen Charge
+	scoreboard objectives add BiolabNSCP dummy BiolabNSC Precision
+	scoreboard objectives add BiolabCOS stat.useItem.minecraft.carrot_on_a_stick Biolab C.o.S.
+	scoreboard players set 100 BiolabTemp 100
+	activate(heavyAssaultNaniteShield)
+END
+
+:heavyAssaultNaniteShield CLOCK 16 0 1
+scoreboard players set @a[HeavyAssault,BiolabCOS=2] BiolabCOS 0
+
+scoreboard players tag @a[HeavyAssault,BiolabCOS=1] remove NaniteShieldDisabled
+scoreboard players tag @a[HeavyAssault,BiolabCOS=1] add NaniteShieldEnabled
+@a[NaniteShieldCooldown,BiolabNSCP<naniteShieldCooldownTime] BiolabCOS = 0
+scoreboard players tag @a[BiolabNSCP>=naniteShieldCooldownTime] remove NaniteShieldCooldown
+
+scoreboard players tag @a[HeavyAssault,BiolabCOS=0] remove NaniteShieldEnabled
+scoreboard players tag @a[HeavyAssault,BiolabCOS=0] add NaniteShieldDisabled
+
+scoreboard players tag @a[BiolabNSCP=0] remove NaniteShieldEnabled
+scoreboard players tag @a[BiolabNSCP=0] add NaniteShieldDisabled
+scoreboard players tag @a[BiolabNSCP=0] add NaniteShieldCooldown
+
+USE @a[HeavyAssault]
+	effect @p[NaniteShieldDisabled,r=0] minecraft:resistance 0
+	effect @p[NaniteShieldDisabled,r=0] minecraft:slowness 0
+	effect @p[NaniteShieldDisabled,r=0] minecraft:glowing 0
+	
+	effect @p[NaniteShieldEnabled,r=0] minecraft:glowing 1000000 0
+	effect @p[NaniteShieldEnabled,r=0] minecraft:slowness 1000000 1
+	effect @p[NaniteShieldEnabled,r=0] minecraft:resistance 1000000 1
+UNUSE
+@a[NaniteShieldEnabled] BiolabNSCP - naniteShieldDischargeRate
+
+@a[HeavyAssault,BiolabNSCP<0] BiolabNSCP = 0
+@a[HeavyAssault,BiolabNSCP>maximumNaniteShieldTicks] BiolabNSCP = maximumNaniteShieldTicks
+@a[NaniteShieldDisabled,BiolabNSCP<maximumNaniteShieldTicks] BiolabNSCP + naniteShieldRechargeRate
+
+@a[HeavyAssault] BiolabNSC = BiolabNSCP
+@a[HeavyAssault] BiolabNSC / 100
+@a[HeavyAssault] BiolabDPL = BiolabNSC
+
+FUNC disableHeavyAssaultNaniteShielding
+	deactivate(heavyAssaultNaniteShield)
+	scoreboard objectives remove BiolabCOS
+	scoreboard objectives remove BiolabNSC
+	scoreboard objectives remove BiolabNSCP
+	scoreboard players tag * remove HeavyAssault
+	scoreboard players tag * remove NaniteShieldEnabled
+	scoreboard players tag * remove NaniteShieldDisabled
+	scoreboard players tag * remove NaniteShieldCooldown
+END

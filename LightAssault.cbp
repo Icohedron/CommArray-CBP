@@ -1,0 +1,65 @@
+// Light Assault Options
+DEFINE maximumAirTicks 8000
+DEFINE jetpackCooldownTime 2000
+DEFINE jetpackStrength 2
+DEFINE jetpackRechargeRate 100
+DEFINE jetpackDischargeRate 80
+
+//// Light Assault ////
+FUNC enableLightAssaultJetpack
+	scoreboard objectives add BiolabJC dummy Biolab Jetpack Charge
+	scoreboard objectives add BiolabJCP dummy BiolabJC Precision
+	scoreboard objectives add BiolabSneakTimer stat.sneakTime Biolab Sneak Timer
+	activate(lightAssaultJetpack)
+END
+
+:lightAssaultJetpack CLOCK 16 0 1
+@a[LightAssault] BiolabJCP + 0
+
+scoreboard players tag @a[LightAssault,BiolabSneakTimer>0] remove JetpackDisabled
+scoreboard players tag @a[LightAssault,BiolabSneakTimer>0] add JetpackEnabled
+@a[JetpackCooldown,BiolabJCP<jetpackCooldownTime] BiolabSneakTimer = 0
+scoreboard players tag @a[BiolabJCP>=jetpackCooldownTime] remove JetpackCooldown
+
+scoreboard players tag @a[LightAssault,BiolabSneakTimer=0] remove JetpackEnabled
+@a[LightAssault] @a[!JetpackCooldown,r=0,c=1] @a[!JetpackEnabled,r=0,c=1] @a[!JetpackDisabled,r=0,c=1] @a[!InLift,r=0,c=1] playsound minecraft:block.lava.extinguish voice @a  ~ ~ ~ 0.5
+@a[LightAssault] @a[!JetpackCooldown,r=0,c=1] @a[!JetpackEnabled,r=0,c=1] @a[!JetpackDisabled,r=0,c=1] @a[!InLift,r=0,c=1] effect @a[r=0,c=1] minecraft:jump_boost 1 255 true
+scoreboard players tag @a[LightAssault,BiolabSneakTimer=0] add JetpackDisabled
+
+scoreboard players tag @a[BiolabJCP=0] remove JetpackEnabled
+@a[LightAssault] @a[!JetpackCooldown,r=0,c=1] @a[!JetpackEnabled,r=0,c=1] @a[!JetpackDisabled,r=0,c=1] @a[!InLift,r=0,c=1] playsound minecraft:block.lava.extinguish voice @a  ~ ~ ~ 0.5
+@a[LightAssault] @a[!JetpackCooldown,r=0,c=1] @a[!JetpackEnabled,r=0,c=1] @a[!JetpackDisabled,r=0,c=1] @a[!InLift,r=0,c=1] effect @a[r=0,c=1] minecraft:jump_boost 1 255 true
+scoreboard players tag @a[BiolabJCP=0] add JetpackDisabled
+scoreboard players tag @a[BiolabJCP=0] add JetpackCooldown
+
+@a[JetpackEnabled] @a[!InLift,r=0,c=1] playsound minecraft:entity.player.attack.nodamage voice @a ~ ~ ~ 1 0.5
+@a[JetpackEnabled] @a[!InLift,team=BiolabBlue,r=0,c=1] particle reddust ~ ~ ~ -1 0 1 -0.05
+@a[JetpackEnabled] @a[!InLift,team=BiolabRed,r=0,c=1] particle reddust ~ ~ ~ 0 0 0 -0.05
+@a[JetpackEnabled] @a[!InLift,team=BiolabPurple,r=0,c=1] particle reddust ~ ~ ~ 0 0 1 -0.05
+
+USE @a[LightAssault] @a[!InLift,r=0,c=1]
+	effect @p[JetpackDisabled,r=0] minecraft:levitation 0
+
+	effect @p[JetpackEnabled,BiolabJCP>0,r=0] minecraft:levitation 1000000 jetpackStrength true
+UNUSE
+@a[JetpackEnabled] @p[!InLift,r=0] BiolabJCP - jetpackDischargeRate
+
+@a[LightAssault,BiolabJCP<0] BiolabJCP = 0
+@a[BiolabJCP>maximumAirTicks] BiolabJCP = maximumAirTicks
+@a[JetpackDisabled,BiolabJCP<maximumAirTicks] BiolabJCP + jetpackRechargeRate
+scoreboard players set @a[LightAssault] BiolabSneakTimer 0
+
+@a[LightAssault] BiolabJC = BiolabJCP
+@a[LightAssault] BiolabJC / 100
+@a[LightAssault] BiolabDPL = BiolabJC
+
+FUNC disableLightAssaultJetpack
+	deactivate(lightAssaultJetpack)
+	scoreboard objectives remove BiolabSneakTimer
+	scoreboard objectives remove BiolabJCP
+	scoreboard objectives remove BiolabJC
+	scoreboard players tag * remove LightAssault
+	scoreboard players tag * remove JetpackEnabled
+	scoreboard players tag * remove JetpackDisabled
+	scoreboard players tag * remove JetpackCooldown
+END
