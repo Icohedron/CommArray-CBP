@@ -5,8 +5,8 @@ FUNC addTeleporter
 END
 
 FUNC enableTeleporters
-	addTeleporter(Blue_Spawn;496;53;104;0.0f;481;74.5;70;-90.0f;BiolabBlue)
-	addTeleporter(Red_Spawn;469;53;111;180.0f;480;70;165;-45.0f;BiolabRed)
+	addTeleporter(Blue_Spawn;-23;18;67;0.0f;-30;39.5;35;-90.0f;BiolabBlue)
+	addTeleporter(Red_Spawn;-50;18;74;180.0f;-31;35;130;-45.0f;BiolabRed)
 	activate(teleporters)
 END
 

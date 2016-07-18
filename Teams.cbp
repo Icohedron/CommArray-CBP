@@ -9,7 +9,7 @@ scoreboard players add @a BiolabPID 0
 @a[BiolabPID=0,c=1] scoreboard players add HighestValueIdentifier BiolabPID 1
 scoreboard players operation @a[BiolabPID=0,c=1] BiolabPID = HighestValueIdentifier BiolabPID
 scoreboard players tag @a[BiolabPlayer] remove BiolabPlayer
-scoreboard players tag @a[x=458,y=4,z=183,dx=50,dy=97,dz=-121] add BiolabPlayer
+scoreboard players tag @a[x=-56,y=6,z=23,dx=59,dy=58,dz=125] add BiolabPlayer
 
 FUNC disablePID
 	deactivate(PIDUpdate)
@@ -48,9 +48,9 @@ END
 //// Team Functions ////
 :distributePlayers CLOCK 16 0 1
 scoreboard players set NumUPlayers BiolabTemp 0
-scoreboard teams join BiolabRed @r[x=474,y=51,z=99,dx=17,dy=8,dz=17,m=2]
-scoreboard teams join BiolabBlue @r[x=474,y=51,z=99,dx=17,dy=8,dz=17,m=2]
-@a[x=474,y=51,z=99,dx=17,dy=8,dz=17,m=2] scoreboard players add NumUPlayers BiolabTemp 1
+scoreboard teams join BiolabRed @r[x=-45,y=16,z=62,dx=17,dy=8,dz=17,m=2]
+scoreboard teams join BiolabBlue @r[x=-45,y=16,z=62,dx=17,dy=8,dz=17,m=2]
+@a[x=-45,y=16,z=62,dx=17,dy=8,dz=17,m=2] scoreboard players add NumUPlayers BiolabTemp 1
 scoreboard players test NumUPlayers BiolabTemp 0 0
 CONDITION
 	deactivate(distributePlayers)
@@ -60,9 +60,12 @@ CONDITION
 // Neutral Area //
 gamemode 2 @a[BiolabPlayer,m=0]
 
-scoreboard players tag @a[x=474,y=51,z=99,dx=17,dy=8,dz=17,m=2] add InBiolabSpawn
-tp @a[InBiolabSpawn,team=BiolabBlue,m=2] 496.0 52 108.0 -90 0
-tp @a[InBiolabSpawn,team=BiolabRed,m=2] 470.0 52 108.0 90 0
+scoreboard players tag @a[x=-45,y=16,z=62,dx=17,dy=8,dz=17,m=2] add InBiolabSpawn
+tp @a[InBiolabSpawn,team=BiolabBlue,m=2] -23.0 17 71.0 -90 0
+tp @a[InBiolabSpawn,team=BiolabRed,m=2] -49.0 17 71.0 90.0 0
+
+effect @a[team=BiolabBlue,x=-54,y=16,z=66,dx=8,dy=6,dz=9] instant_health 1 10
+effect @a[team=BiolabRed,x=-27,y=16,z=66,dx=8,dy=6,dz=9] instant_health 1 10
 
 // Reset Experience
 scoreboard players reset @a[InBiolabSpawn,m=2] BiolabCPL

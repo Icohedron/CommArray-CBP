@@ -15,7 +15,7 @@ END
 :weapons CLOCK 16 0 1
 // Clear all dropped items except Ammo Packs
 scoreboard players tag @e[type=Item] add AmmoPack {Item:{id:"minecraft:stone_slab"}}
-kill @e[x=458,y=54,z=183,dx=50,dy=47,dz=-121,type=Item,!AmmoPack]
+kill @e[x=-56,y=6,z=23,dx=59,dy=58,dz=125,type=Item,!AmmoPack]
 entitydata @e[type=Snowball] {NoGravity:1}
 
 // Snowball damage and effects

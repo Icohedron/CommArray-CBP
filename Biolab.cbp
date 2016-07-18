@@ -147,8 +147,8 @@ disableLightAssaultJetpack
 disableExperienceIndicator
 disablePID
 scoreboard objectives remove BiolabTemp
-effect @a[x=458,y=54,z=183,dx=50,dy=47,dz=-121,m=2] clear
-clear @a[x=458,y=54,z=183,dx=50,dy=47,dz=-121,m=2]
-kill @e[x=458,y=54,z=183,dx=50,dy=47,dz=-121,type=!Player]
-tp @a[x=458,y=54,z=183,dx=50,dy=47,dz=-121,m=2] 483.0 52 108.0 0 0
+effect @a[x=-56,y=6,z=23,dx=59,dy=58,dz=125,m=2] clear
+clear @a[x=-56,y=6,z=23,dx=59,dy=58,dz=125,m=2]
+kill @e[x=-56,y=6,z=23,dx=59,dy=58,dz=125,type=!Player]
+tp @a[x=-56,y=6,z=23,dx=59,dy=58,dz=125,m=2] -36.0 17 71.0 180.0 0.0
 gamerule naturalRegeneration true

@@ -1,10 +1,20 @@
 // Control Point Options
 DEFINE controlPointRange 4
 DEFINE maxControlPointIntegrity 200
-DEFINE scoreTarget 720000
-	
+DEFINE scoreTarget 1680000
 
 //// Control Points v3.0 ////
+FUNC createControlPoint
+	summon ArmorStand |1| |2| |3| {Tags:["BiolabControlPoint","BCP|0|"],NoGravity:1b,Marker:1b,Invisible:1b,Invulnerable:1b,PerisistenceRequired:1b,Small:1b}
+	USE @e[BCP|0|]
+		summon Shulker ~ ~ ~ {CustomName:"Control Point |0|",CustomNameVisible:1b,Tags:["BiolabControlPointVisual","BCP|0|V"],Invulnerable:1b,Glowing:1b,NoAI:1b,PerisistenceRequired:1b}
+	UNUSE
+	scoreboard players set @e[BCP|0|] BiolabCPI DIV(maxControlPointIntegrity;2)
+	scoreboard players set @e[BCP|0|] BiolabCPIS 1
+	@e[BCP|0|] setblock ~ ~1 ~ minecraft:stained_glass 0
+	scoreboard teams join BiolabCPNeutral @e[BCP|0|]
+	scoreboard teams join BiolabCPNeutral @e[BCP|0|V]
+END
 
 FUNC enableControlPoints
 	scoreboard objectives add BiolabCPI dummy CP Integrity
@@ -14,15 +24,8 @@ FUNC enableControlPoints
 	scoreboard objectives add BiolabTS dummy Team Scores
 	scoreboard players set 20 BiolabTemp 20
 	
-	summon ArmorStand 469 76 122 {Tags:["BiolabControlPoint","BCP"],NoGravity:1b,Marker:1b,Invisible:1b,Invulnerable:1b,PerisistenceRequired:1b,Small:1b}
-	USE @e[BCP]
-		summon Shulker ~ ~ ~ {CustomName:"Control Point",CustomNameVisible:1b,Tags:["BiolabControlPointVisual","BCPV"],Invulnerable:1b,Glowing:1b,NoAI:1b,PerisistenceRequired:1b}
-	UNUSE
-	scoreboard players set @e[BCP] BiolabCPI DIV(maxControlPointIntegrity;2)
-	scoreboard players set @e[BCP] BiolabCPIS 1
-	@e[BCP] setblock ~ ~1 ~ minecraft:stained_glass 0
-	scoreboard teams join BiolabCPNeutral @e[BCP]
-	scoreboard teams join BiolabCPNeutral @e[BCPV]
+	createControlPoint(A;-42;41;87)
+	createControlPoint(B;-20;47;84)
 	
 	scoreboard teams join BiolabCPBlue Blue_Team
 	scoreboard teams join BiolabCPRed Red_Team
@@ -61,17 +64,17 @@ scoreboard players tag @e[BiolabCPI=0,team=BiolabCPNeutral,BiolabCPPC=2] add CPt
 scoreboard players tag @e[BiolabCPI=0,team=!BiolabCPNeutral] add CPtoNeutral
 
 @e[CPtoBlue] playsound minecraft:entity.experience_orb.touch voice @a[team=BiolabBlue] ~ ~ ~
-@e[CPtoBlue] tellraw @a[BiolabPlayer] ["",{"text":"[","color":"yellow"},{"text":"Indar Comm. Array","color":"green"},{"text":"]","color":"yellow"},": ",{"text":"Blue","color":"blue"}," team has captured the Control Point!"]
+@e[CPtoBlue] tellraw @a[BiolabPlayer] ["",{"text":"[","color":"yellow"},{"text":"Biolab","color":"green"},{"text":"]","color":"yellow"},": ",{"text":"Blue","color":"blue"}," team has captured ",{"selector":"@e[tag=BiolabControlPointVisual,c=1]"},"!"]
 @e[CPtoBlue] BiolabCPI = 1
 scoreboard teams join BiolabCPBlue @e[CPtoBlue]
 
 @e[CPtoRed] playsound minecraft:entity.experience_orb.touch voice @a[team=BiolabRed] ~ ~ ~
-@e[CPtoRed] tellraw @a[BiolabPlayer] ["",{"text":"[","color":"yellow"},{"text":"Indar Comm. Array","color":"green"},{"text":"]","color":"yellow"},": ",{"text":"Red","color":"red"}," team has captured the Control Point!"]
+@e[CPtoRed] tellraw @a[BiolabPlayer] ["",{"text":"[","color":"yellow"},{"text":"Biolab","color":"green"},{"text":"]","color":"yellow"},": ",{"text":"Red","color":"red"}," team has captured ",{"selector":"@e[tag=BiolabControlPointVisual,c=1]"},"!"]
 @e[CPtoRed] BiolabCPI = 1
 scoreboard teams join BiolabCPRed @e[CPtoRed]
 
 @e[CPtoNeutral] playsound minecraft:entity.experience_orb.touch voice @a ~ ~ ~
-@e[CPtoNeutral] tellraw @a[BiolabPlayer] ["",{"text":"[","color":"yellow"},{"text":"Indar Comm. Array","color":"green"},{"text":"]","color":"yellow"},": ","the ",{"selector":"@e[tag=BiolabControlPointVisual,c=1]"}," has been lost!"]
+@e[CPtoNeutral] tellraw @a[BiolabPlayer] ["",{"text":"[","color":"yellow"},{"text":"Biolab","color":"green"},{"text":"]","color":"yellow"},": ",{"selector":"@e[tag=BiolabControlPointVisual,c=1]"}," has been lost!"]
 @e[CPtoNeutral] BiolabCPI = DIV(maxControlPointIntegrity;2)
 scoreboard teams join BiolabCPNeutral @e[CPtoNeutral]
 
@@ -103,12 +106,22 @@ scoreboard players set @e[BiolabBCP=1,BiolabTemp<=10] BiolabBCP 0
 @e[BiolabBCP=0,team=BiolabCPRed] scoreboard teams join BiolabCPRed @e[BiolabControlPointVisual,r=1,c=1,team=!BiolabCPRed]
 
 // Inventory indicators
-@e[BCP,BiolabBCP=0,team=BiolabCPBlue,BiolabCPIS=2] replaceitem entity @a[BiolabPlayer] slot.hotbar.4 minecraft:stained_glass 1 11 {display:{Name:"Control Point"}}
-@e[BCP,BiolabBCP=0,team=BiolabCPRed,BiolabCPIS=2] replaceitem entity @a[BiolabPlayer] slot.hotbar.4 minecraft:stained_glass 1 14 {display:{Name:"Control Point"}}
-@e[BCP,BiolabBCP=0,team=BiolabCPBlue,BiolabCPIS=1] replaceitem entity @a[BiolabPlayer] slot.hotbar.4 minecraft:stained_glass 1 3 {display:{Name:"Control Point"}}
-@e[BCP,BiolabBCP=0,team=BiolabCPRed,BiolabCPIS=1] replaceitem entity @a[BiolabPlayer] slot.hotbar.4 minecraft:stained_glass 1 6 {display:{Name:"Control Point"}}
+@e[BCPA,BiolabBCP=0,team=BiolabCPBlue,BiolabCPIS=2] replaceitem entity @a[BiolabPlayer] slot.hotbar.4 minecraft:stained_glass 1 11 {display:{Name:"Control Point A"}}
+@e[BCPA,BiolabBCP=0,team=BiolabCPRed,BiolabCPIS=2] replaceitem entity @a[BiolabPlayer] slot.hotbar.4 minecraft:stained_glass 1 14 {display:{Name:"Control Point A"}}
+@e[BCPA,BiolabBCP=0,team=BiolabCPPurple,BiolabCPIS=2] replaceitem entity @a[BiolabPlayer] slot.hotbar.4 minecraft:stained_glass 1 10 {display:{Name:"Control Point A"}}
+@e[BCPA,BiolabBCP=0,team=BiolabCPBlue,BiolabCPIS=1] replaceitem entity @a[BiolabPlayer] slot.hotbar.4 minecraft:stained_glass 1 3 {display:{Name:"Control Point A"}}
+@e[BCPA,BiolabBCP=0,team=BiolabCPRed,BiolabCPIS=1] replaceitem entity @a[BiolabPlayer] slot.hotbar.4 minecraft:stained_glass 1 6 {display:{Name:"Control Point A"}}
+@e[BCPA,BiolabBCP=0,team=BiolabCPPurple,BiolabCPIS=1] replaceitem entity @a[BiolabPlayer] slot.hotbar.4 minecraft:stained_glass 1 2 {display:{Name:"Control Point A"}}
 
-@e[BCP] @e[BiolabControlPointVisual,team=BiolabCPNeutral,r=0,c=1] replaceitem entity @a[BiolabPlayer] slot.hotbar.4 minecraft:stained_glass 1 0 {display:{Name:"Control Point"}}
+@e[BCPB,BiolabBCP=0,team=BiolabCPBlue,BiolabCPIS=2] replaceitem entity @a[BiolabPlayer] slot.hotbar.5 minecraft:stained_glass 1 11 {display:{Name:"Control Point B"}}
+@e[BCPB,BiolabBCP=0,team=BiolabCPRed,BiolabCPIS=2] replaceitem entity @a[BiolabPlayer] slot.hotbar.5 minecraft:stained_glass 1 14 {display:{Name:"Control Point B"}}
+@e[BCPB,BiolabBCP=0,team=BiolabCPPurple,BiolabCPIS=2] replaceitem entity @a[BiolabPlayer] slot.hotbar.5 minecraft:stained_glass 1 10 {display:{Name:"Control Point B"}}
+@e[BCPB,BiolabBCP=0,team=BiolabCPBlue,BiolabCPIS=1] replaceitem entity @a[BiolabPlayer] slot.hotbar.5 minecraft:stained_glass 1 3 {display:{Name:"Control Point B"}}
+@e[BCPB,BiolabBCP=0,team=BiolabCPRed,BiolabCPIS=1] replaceitem entity @a[BiolabPlayer] slot.hotbar.5 minecraft:stained_glass 1 6 {display:{Name:"Control Point B"}}
+@e[BCPB,BiolabBCP=0,team=BiolabCPPurple,BiolabCPIS=1] replaceitem entity @a[BiolabPlayer] slot.hotbar.5 minecraft:stained_glass 1 2 {display:{Name:"Control Point B"}}
+
+@e[BCPA] @e[BiolabControlPointVisual,team=BiolabCPNeutral,r=0,c=1] replaceitem entity @a[BiolabPlayer] slot.hotbar.4 minecraft:stained_glass 1 0 {display:{Name:"Control Point A"}}
+@e[BCPB] @e[BiolabControlPointVisual,team=BiolabCPNeutral,r=0,c=1] replaceitem entity @a[BiolabPlayer] slot.hotbar.5 minecraft:stained_glass 1 0 {display:{Name:"Control Point B"}}
 
 // Incrementing team scores
 @e[BiolabCPIS=2,team=BiolabCPBlue] Blue_Team BiolabTS + 10
